@@ -460,6 +460,11 @@
                     <span><strong>Listed by:</strong> ${escapeHTML(prop.posted_by || 'Unknown')}</span>
                     ${prop.additional_features ? `<span><strong>Features:</strong> ${escapeHTML(prop.additional_features)}</span>` : ''}
                 </div>
+                <div class="detail-actions" style="margin-top: 24px;">
+                    <button class="btn btn-primary btn-lg" style="width: 100%;" onclick="alert('Tour request received! Our agent will contact you shortly to confirm the date and time.')">
+                        📅 Book a Tour
+                    </button>
+                </div>
             </div>
         `;
 
