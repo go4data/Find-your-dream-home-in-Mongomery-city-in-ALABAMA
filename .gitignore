@@ -1,0 +1,20 @@
+# Ignore Excel source files (too large for git)
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+schema.json
+
+# IDE & System
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Evaluation & docs (not needed for deployment)
+evaluation.md
+read_cols.py
+ApplicationClaimsEvaluator.md
+Omni-Guide.md
+BrightData_CrawlAPI_Integration_Prompt.md

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered real estate assistant for Montgomery City. Find your perfect home with conversational AI search, YouTube Shorts video tours, and match probability rankings.">
+    <title>Find Your Dream Home in Montgomery City</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ====== NAVIGATION ====== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">RealEstate<span class="logo-accent">AI</span></span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" class="nav-link active">Home</a></li>
+                <li><a href="#seeker" class="nav-link">Find Property</a></li>
+                <li><a href="#owner" class="nav-link">List Property</a></li>
+                <li><a href="#crawl-runner" class="nav-link">Crawl Runner</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-icon" id="settingsBtn" title="Settings" aria-label="Open settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button class="btn-hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== HERO SECTION ====== -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in">
+                <span class="badge-dot"></span>
+                AI-Powered • Montgomery, AL
+            </div>
+            <h1 class="hero-title animate-fade-in-up">
+                Find Your <span class="gradient-text">Dream Home</span><br>
+                in Montgomery City
+            </h1>
+            <p class="hero-subtitle animate-fade-in-up delay-1">
+                Describe what you're looking for in plain English. Our AI searches 1,368 properties and returns the best matches — ranked by probability, with video tours.
+            </p>
+            <div class="hero-cta animate-fade-in-up delay-2">
+                <a href="#seeker" class="btn btn-primary btn-lg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Search Properties
+                </a>
+                <a href="#owner" class="btn btn-outline btn-lg">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    List Your Property
+                </a>
+            </div>
+            <div class="hero-stats animate-fade-in-up delay-3">
+                <div class="stat">
+                    <span class="stat-number" id="statTotal">1,368</span>
+                    <span class="stat-label">Properties</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">548</span>
+                    <span class="stat-label">For Rent</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">820</span>
+                    <span class="stat-label">For Sale</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Client-Side AI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SEEKER SECTION (Chat + Results) ====== -->
+    <section class="section" id="seeker">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">AI Property Search</span>
+                </h2>
+                <p class="section-subtitle">Describe your ideal home in plain English — our AI will find the best matches with probability scores.</p>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message bot">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            <p>Welcome! I'm your AI real estate assistant for Montgomery City. Describe what you're looking for and I'll find the <strong>top 7 best-matched properties</strong>.</p>
+                            <p class="message-hint">Try: <em>"I want a 3 bedroom house for sale under $200,000"</em> or <em>"Apartment for rent with 2 baths under $1,200"</em></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="chat-suggestions" id="chatSuggestions">
+                        <button class="suggestion-chip" data-query="3 bedroom house for sale under $200,000">🏡 3bd house under $200k</button>
+                        <button class="suggestion-chip" data-query="apartment for rent with 2 bedrooms under $1,200">🏢 2bd apartment for rent</button>
+                        <button class="suggestion-chip" data-query="large family home for sale with 4 bedrooms">👨‍👩‍👧‍👦 Family home 4bd</button>
+                        <button class="suggestion-chip" data-query="cheap studio apartment for rent under $800">💰 Cheap studio under $800</button>
+                    </div>
+                    <form class="chat-form" id="chatForm">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Describe your ideal home..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary chat-send" id="chatSend" aria-label="Send message">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="results-container" id="resultsContainer" style="display:none;">
+                <div class="results-header">
+                    <h3 class="results-title" id="resultsTitle">Top Matches</h3>
+                    <div class="results-controls">
+                        <select class="results-sort" id="resultsSort">
+                            <option value="match">Best Match</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="area-desc">Area: Largest</option>
+                        </select>
+                        <button class="btn btn-outline btn-sm" id="backToChat">← Back to Chat</button>
+                    </div>
+                </div>
+                <div class="results-grid" id="resultsGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== OWNER SECTION (List Property) ====== -->
+    <section class="section section-alt" id="owner">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">List Your Property</span>
+                </h2>
+                <p class="section-subtitle">Add your property to our database. It will be instantly searchable by seekers.</p>
+            </div>
+
+            <form class="listing-form glass-card" id="listingForm">
+                <div class="form-grid">
+                    <div class="form-group form-group-full">
+                        <label for="listingPurpose">Property Purpose *</label>
+                        <select id="listingPurpose" required>
+                            <option value="">Select purpose...</option>
+                            <option value="House for sale">House for Sale</option>
+                            <option value="Apartment for sale">Apartment for Sale</option>
+                            <option value="Condo for sale">Condo for Sale</option>
+                            <option value="Townhome for sale">Townhome for Sale</option>
+                            <option value="House for rent">House for Rent</option>
+                            <option value="Apartment for rent">Apartment for Rent</option>
+                            <option value="Condo for rent">Condo for Rent</option>
+                            <option value="Townhome for rent">Townhome for Rent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="listingPrice">Price ($) *</label>
+                        <input type="number" id="listingPrice" placeholder="e.g. 150000" required min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="listingArea">Area (sqft) *</label>
+                        <input type="number" id="listingArea" placeholder="e.g. 2000" required min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="listingBeds">Bedrooms *</label>
+                        <input type="number" id="listingBeds" placeholder="e.g. 3" required min="0" max="20">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="listingBaths">Bathrooms *</label>
+                        <input type="number" id="listingBaths" placeholder="e.g. 2" required min="0" max="20" step="0.5">
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="listingAddress">Address *</label>
+                        <input type="text" id="listingAddress" placeholder="e.g. 1234 Oak Lane, Montgomery, AL 36106" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="listingPostedBy">Posted By *</label>
+                        <input type="text" id="listingPostedBy" placeholder="Your name or agency" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="listingFeatures">Additional Features</label>
+                        <input type="text" id="listingFeatures" placeholder="e.g. New roof, Pool, Price cut: $5,000">
+                    </div>
+
+                    <!-- Image Uploads -->
+                    <div class="form-group form-group-full">
+                        <label>Property Images (up to 3) — drag & drop, paste, or enter URL</label>
+                        <div class="upload-zone" id="imageUploadZone">
+                            <div class="upload-zone-inner">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                                <span>Drop images here, paste, or <label class="upload-browse" for="imageFileInput">browse</label></span>
+                                <input type="file" id="imageFileInput" accept="image/*" multiple hidden>
+                            </div>
+                            <div class="upload-previews" id="imagePreviews"></div>
+                        </div>
+                        <div class="upload-url-fallback">
+                            <span class="upload-or">— or enter URLs —</span>
+                            <input type="url" id="listingImg1" placeholder="Image URL 1">
+                            <input type="url" id="listingImg2" placeholder="Image URL 2">
+                            <input type="url" id="listingImg3" placeholder="Image URL 3">
+                        </div>
+                    </div>
+
+                    <!-- Video Upload -->
+                    <div class="form-group form-group-full">
+                        <label>Property Video — drag & drop, or enter YouTube URL</label>
+                        <div class="upload-zone upload-zone-video" id="videoUploadZone">
+                            <div class="upload-zone-inner">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Drop video here or <label class="upload-browse" for="videoFileInput">browse</label></span>
+                                <input type="file" id="videoFileInput" accept="video/*" hidden>
+                            </div>
+                            <div class="upload-previews" id="videoPreviews"></div>
+                        </div>
+                        <div class="upload-url-fallback">
+                            <span class="upload-or">— or enter YouTube Shorts URL —</span>
+                            <input type="url" id="listingVideo" placeholder="https://youtube.com/shorts/...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Description Generator -->
+                <div class="ai-description-box" id="aiDescriptionBox">
+                    <div class="ai-desc-header">
+                        <span class="ai-badge">🤖 AI</span>
+                        <span>Auto-Generated Description</span>
+                        <button type="button" class="btn btn-sm btn-outline" id="generateDescBtn">Generate</button>
+                    </div>
+                    <textarea id="listingDescription" rows="4" placeholder="Click 'Generate' or type your own description..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                        Add Listing
+                    </button>
+                    <button type="reset" class="btn btn-outline btn-lg">Clear Form</button>
+                </div>
+            </form>
+
+            <!-- User's Listings -->
+            <div class="my-listings" id="myListings" style="display:none;">
+                <h3 class="results-title">Your Listed Properties</h3>
+                <div class="results-grid" id="myListingsGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== CRAWL RUNNER SECTION (Bright Data) ====== -->
+    <section class="section" id="crawl-runner">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">Data Crawl Runner</span>
+                </h2>
+                <p class="section-subtitle">Use Bright Data's Crawl API to discover new property listings from across the web.</p>
+            </div>
+            <div class="crawl-runner-container glass-card">
+                <div class="crawl-status-bar" id="crawlStatusBar">
+                    <span class="crawl-status-indicator" id="crawlStatusIndicator"></span>
+                    <span id="crawlStatusText">Ready — Configure your API key in Settings to enable live crawling.</span>
+                </div>
+                <div class="form-group">
+                    <label for="crawlUrls">URLs to Crawl (one per line)</label>
+                    <textarea id="crawlUrls" rows="5" placeholder="https://www.zillow.com/montgomery-al/&#10;https://www.realtor.com/realestateandhomes-search/Montgomery_AL"></textarea>
+                </div>
+                <div class="crawl-actions">
+                    <button class="btn btn-primary" id="runCrawlBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Run Crawl
+                    </button>
+                    <button class="btn btn-outline" id="cancelCrawlBtn" disabled>Cancel</button>
+                    <button class="btn btn-outline" id="viewSnapshotsBtn">View Snapshots</button>
+                </div>
+                <!-- Progress -->
+                <div class="crawl-progress" id="crawlProgress" style="display:none;">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="crawlProgressBar"></div>
+                    </div>
+                    <span class="progress-label" id="crawlProgressLabel">Starting...</span>
+                </div>
+                <!-- Output -->
+                <div class="crawl-output" id="crawlOutput" style="display:none;">
+                    <div class="crawl-output-header">
+                        <span>Results</span>
+                        <button class="btn btn-sm btn-outline" id="downloadCrawlBtn">Download JSON</button>
+                    </div>
+                    <pre class="crawl-output-body" id="crawlOutputBody"></pre>
+                </div>
+                <!-- Diagnostics -->
+                <details class="crawl-diagnostics">
+                    <summary>Integration Diagnostics</summary>
+                    <div class="diagnostics-body" id="diagnosticsBody">
+                        <p class="diagnostics-empty">No requests recorded yet.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SETTINGS MODAL ====== -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="btn-icon modal-close" id="settingsClose" aria-label="Close settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="general">General</button>
+                <button class="tab-btn" data-tab="brightdata">Bright Data</button>
+            </div>
+            <div class="modal-body">
+                <!-- General Tab -->
+                <div class="tab-panel active" id="tab-general">
+                    <div class="form-group">
+                        <label>Theme</label>
+                        <select id="settingsTheme">
+                            <option value="dark">Dark (Default)</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Results per page</label>
+                        <input type="number" id="settingsPerPage" value="12" min="4" max="50">
+                    </div>
+                    <div class="settings-info">
+                        <p>User listings stored locally: <strong id="settingsListingCount">0</strong></p>
+                        <button class="btn btn-sm btn-outline" id="clearListingsBtn">Clear All My Listings</button>
+                    </div>
+                </div>
+                <!-- Bright Data Tab -->
+                <div class="tab-panel" id="tab-brightdata">
+                    <div class="bd-mode-badge">
+                        <span class="badge-dot badge-dot-warning"></span>
+                        Dev / Single-user Mode — Key stored in localStorage
+                    </div>
+                    <div class="form-group">
+                        <label for="bdApiKey">API Key</label>
+                        <div class="input-with-toggle">
+                            <input type="password" id="bdApiKey" placeholder="Enter your Bright Data API key">
+                            <button type="button" class="btn-icon btn-toggle-vis" id="bdToggleKey" aria-label="Toggle API key visibility">👁</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bdDatasetId">Dataset ID</label>
+                        <input type="text" id="bdDatasetId" placeholder="e.g. gd_abc123xyz">
+                    </div>
+                    <div class="form-group">
+                        <label for="bdOutputFields">Output Fields (pipe-separated)</label>
+                        <input type="text" id="bdOutputFields" placeholder="markdown|html|ld_json" value="markdown|html">
+                    </div>
+                    <div class="form-group inline-group">
+                        <label>
+                            <input type="checkbox" id="bdIncludeErrors" checked> Include Errors
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="bdDownloadFormat">Download Format</label>
+                        <select id="bdDownloadFormat">
+                            <option value="json">JSON</option>
+                            <option value="ndjson">NDJSON</option>
+                            <option value="jsonl">JSONL</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <details class="bd-advanced">
+                        <summary>Advanced</summary>
+                        <div class="form-group inline-group">
+                            <label><input type="checkbox" id="bdCompress"> Compress</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="bdBatchSize">Batch Size (≥1000)</label>
+                            <input type="number" id="bdBatchSize" placeholder="1000" min="1000">
+                        </div>
+                    </details>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="bdSaveBtn">Save</button>
+                        <button class="btn btn-outline" id="bdTestBtn">Test Connection</button>
+                        <button class="btn btn-outline btn-danger" id="bdClearBtn">Clear Key</button>
+                    </div>
+                    <div class="bd-test-result" id="bdTestResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PROPERTY DETAIL MODAL ====== -->
+    <div class="modal-overlay" id="propertyModal">
+        <div class="modal modal-lg glass-card">
+            <button class="btn-icon modal-close" id="propertyClose" aria-label="Close property detail">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="property-detail" id="propertyDetail"></div>
+        </div>
+    </div>
+
+    <!-- ====== TOAST CONTAINER ====== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="brightdata.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
