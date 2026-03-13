@@ -12,6 +12,7 @@
     const MAX_RESULTS = 7; // Show only the top 7 most relevant results
 
     const LISTINGS_KEY = 'realestate_user_listings';
+    const CLAIMED_KEY = 'realestate_claimed_properties';
 
     // File upload state
     let uploadedImages = [];   // Array of { file, dataUrl }
@@ -40,6 +41,11 @@
             const resp = await fetch('properties.json');
             if (!resp.ok) throw new Error('Failed to load properties.json');
             allProperties = await resp.json();
+            
+            // Filter out claimed properties
+            const claimedIds = getClaimedProperties();
+            allProperties = allProperties.filter(p => !claimedIds.includes(p.id));
+
             // Merge user listings
             const userListings = getUserListings();
             allProperties = allProperties.concat(userListings);
@@ -72,17 +78,47 @@
         allProperties = allProperties.filter(p => !p.userListed);
     }
 
+    // ===================== CLAIMED PROPERTIES =====================
+    function getClaimedProperties() {
+        try {
+            const stored = localStorage.getItem(CLAIMED_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch { return []; }
+    }
+
+    function claimProperty(propId) {
+        const claimed = getClaimedProperties();
+        if (!claimed.includes(propId)) {
+            claimed.push(propId);
+            localStorage.setItem(CLAIMED_KEY, JSON.stringify(claimed));
+            // Remove from active state
+            allProperties = allProperties.filter(p => p.id !== propId);
+            return true;
+        }
+        return false;
+    }
+
     // ===================== SEARCH ENGINE =====================
+    const SYNONYM_MAP = {
+        'cheap': ['affordable', 'budget', 'low cost', 'economy', 'cheap'],
+        'affordable': ['budget', 'cheap', 'low cost'],
+        'luxury': ['premium', 'expensive', 'high-end', 'pool', 'modern', 'luxury'],
+        'spacious': ['large', 'big', 'huge', 'expansive', 'spacious'],
+        'modern': ['new', 'updated', 'renovated', 'contemporary', 'luxury'],
+        'quiet': ['peaceful', 'calm', 'serene', 'private'],
+        'central': ['downtown', 'center', 'hub', 'convenient']
+    };
+
     function searchProperties(query) {
         if (!query || !query.trim()) return [];
 
         const q = query.toLowerCase();
         const parsed = parseQuery(q);
 
-        // STRICT FILTERING: pre-filter by hard constraints before scoring
+        // STRICT FILTERING: pre-filter by hard constraints
         let candidates = [...allProperties];
 
-        // Hard filter 1: If user specified rent/sale, EXCLUDE wrong type
+        // Hard filter 1: Type
         if (parsed.type) {
             candidates = candidates.filter(prop => {
                 const purpose = (prop.property_purpose || '').toLowerCase();
@@ -92,102 +128,64 @@
             });
         }
 
-        // Hard filter 2: If user specified max price, exclude properties > 130% of max
+        // Hard filter 2: Price (relaxed slightly to 150%)
         if (parsed.maxPrice) {
             candidates = candidates.filter(prop => {
                 const price = parseFloat(prop.price) || 0;
-                return price <= parsed.maxPrice * 1.3;
-            });
-        }
-
-        // Hard filter 3: If user specified beds, exclude properties off by > 1
-        if (parsed.beds !== null) {
-            candidates = candidates.filter(prop => {
-                const beds = parseFloat(prop.beds) || 0;
-                return Math.abs(beds - parsed.beds) <= 1;
+                return price <= parsed.maxPrice * 1.5;
             });
         }
 
         // Score remaining candidates
         const scored = candidates.map(prop => {
-            let score = 0;
-            let maxScore = 0;
-
-            // --- Type match (rent/sale) ---
-            maxScore += 25;
-            const purpose = (prop.property_purpose || '').toLowerCase();
-            if (parsed.type) {
-                if (parsed.type === 'rent' && (purpose.includes('rent') || prop.type === 'rent')) score += 25;
-                else if (parsed.type === 'sale' && (purpose.includes('sale') || prop.type === 'sale')) score += 25;
-                // wrong type: score stays 0 (but shouldn't reach here due to hard filter)
-            } else {
-                score += 15;
-            }
-
-            // --- Price match (strict) ---
-            maxScore += 30;
-            const price = parseFloat(prop.price) || 0;
-            if (parsed.maxPrice && parsed.minPrice) {
-                if (price >= parsed.minPrice && price <= parsed.maxPrice) score += 30;
-                else if (price <= parsed.maxPrice * 1.1) score += 18;
-                else score += 5;
-            } else if (parsed.maxPrice) {
-                if (price <= parsed.maxPrice) score += 30;
-                else if (price <= parsed.maxPrice * 1.15) score += 15;
-                else score += 3;
-            } else if (parsed.minPrice) {
-                if (price >= parsed.minPrice) score += 25;
-            } else {
-                score += 12;
-            }
-
-            // --- Beds match (strict) ---
-            maxScore += 25;
-            const beds = parseFloat(prop.beds) || 0;
-            if (parsed.beds !== null) {
-                if (beds === parsed.beds) score += 25;
-                else if (Math.abs(beds - parsed.beds) <= 1) score += 10;
-            } else {
-                score += 10;
-            }
-
-            // --- Baths match ---
-            maxScore += 10;
-            const baths = parseFloat(prop.bathrooms) || 0;
-            if (parsed.baths !== null) {
-                if (baths >= parsed.baths) score += 10;
-                else if (Math.abs(baths - parsed.baths) <= 0.5) score += 6;
-            } else {
-                score += 5;
-            }
-
-            // --- Area match ---
-            maxScore += 5;
-            const area = parseFloat(prop.area_sqft) || 0;
-            if (parsed.minArea) {
-                if (area >= parsed.minArea) score += 5;
-                else if (area >= parsed.minArea * 0.8) score += 2;
-            } else {
-                score += 3;
-            }
-
-            // --- Address / keyword match ---
-            maxScore += 5;
-            const address = (prop.address || '').toLowerCase();
+            let keywordScore = 0;
+            let semanticScore = 0;
+            
+            const content = `${prop.address} ${prop.property_purpose} ${prop.additional_features || ''} ${prop.description || ''}`.toLowerCase();
+            
+            // --- Keyword Match (70% Weight) ---
             if (parsed.keywords.length > 0) {
-                const matchCount = parsed.keywords.filter(kw => address.includes(kw) || purpose.includes(kw)).length;
-                score += Math.min(5, (matchCount / parsed.keywords.length) * 5);
+                const matches = parsed.keywords.filter(kw => content.includes(kw)).length;
+                keywordScore = (matches / parsed.keywords.length) * 100;
             } else {
-                score += 3;
+                keywordScore = 80; // Default high if no specific keywords
             }
 
-            const matchPct = Math.round((score / maxScore) * 100);
-            return { ...prop, matchScore: matchPct };
+            // --- Semantic / Synonym Match (30% Weight) ---
+            let synMatches = 0;
+            let synPossible = 0;
+            parsed.keywords.forEach(kw => {
+                const syns = SYNONYM_MAP[kw];
+                if (syns) {
+                    synPossible++;
+                    if (syns.some(s => content.includes(s))) synMatches++;
+                }
+            });
+            semanticScore = synPossible > 0 ? (synMatches / synPossible) * 100 : 70;
+
+            // --- Feature Matches (Additional influence) ---
+            // Price match
+            let pricePenalty = 0;
+            const price = parseFloat(prop.price) || 0;
+            if (parsed.maxPrice && price > parsed.maxPrice) {
+                pricePenalty = Math.min(40, ((price - parsed.maxPrice) / parsed.maxPrice) * 50);
+            }
+            
+            // Beds/Baths match
+            let featureScore = 100;
+            if (parsed.beds && Math.abs((prop.beds || 0) - parsed.beds) > 0) featureScore -= 20;
+            if (parsed.baths && Math.abs((prop.bathrooms || 0) - parsed.baths) > 0.5) featureScore -= 15;
+
+            // Hybrid calculation: 70% Keyword + 30% Semantic
+            let finalScore = (keywordScore * 0.7) + (semanticScore * 0.3);
+            finalScore = (finalScore * 0.8) + (featureScore * 0.2) - pricePenalty;
+
+            return { ...prop, matchScore: Math.max(0, Math.min(100, Math.round(finalScore))) };
         });
 
-        // Require at least 60% match, sort descending, limit to top MAX_RESULTS
+        // Sort descending, limit to top MAX_RESULTS
         return scored
-            .filter(p => p.matchScore >= 60)
+            .filter(p => p.matchScore >= 50)
             .sort((a, b) => b.matchScore - a.matchScore)
             .slice(0, MAX_RESULTS);
     }
@@ -460,13 +458,30 @@
                     <span><strong>Listed by:</strong> ${escapeHTML(prop.posted_by || 'Unknown')}</span>
                     ${prop.additional_features ? `<span><strong>Features:</strong> ${escapeHTML(prop.additional_features)}</span>` : ''}
                 </div>
-                <div class="detail-actions" style="margin-top: 24px;">
-                    <button class="btn btn-primary btn-lg" style="width: 100%;" onclick="alert('Tour request received! Our agent will contact you shortly to confirm the date and time.')">
+                <div class="detail-actions" style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button class="btn btn-primary" onclick="alert('Tour request received! Our agent will contact you shortly to confirm the date and time.')">
                         📅 Book a Tour
+                    </button>
+                    <button class="btn btn-outline" id="claimBtn">
+                        🔑 Get This Property
                     </button>
                 </div>
             </div>
         `;
+
+        // Wire up claim button
+        const claimBtn = $('#claimBtn');
+        claimBtn.addEventListener('click', () => {
+            if (claimProperty(prop.id)) {
+                showToast('Property claimed! It has been removed from your search results.', 'success');
+                $('#propertyModal').classList.remove('open');
+                // Refresh results if we were looking at them
+                if (lastResults.length > 0) {
+                    lastResults = lastResults.filter(p => p.id !== prop.id);
+                    renderResults(lastResults);
+                }
+            }
+        });
 
         $('#propertyModal').classList.add('open');
     }
